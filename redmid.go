@@ -35,6 +35,7 @@ func (redmid *redmid) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		newWriter := NewResponseWriter(w)
+		ctx := r.Context()
 
 		// get the uri path
 		path := r.URL.Path
@@ -53,7 +54,7 @@ func (redmid *redmid) Middleware(next http.Handler) http.Handler {
 		val, err := redmid.redis.Get(ctx, redisKey).Result()
 		if err != nil {
 			// key does not exist, continue to next handler
-			next.ServeHTTP(newWriter, r)
+			next.ServeHTTP(&newWriter, r)
 
 			// get response body from next handler
 			data := newWriter.Data()
